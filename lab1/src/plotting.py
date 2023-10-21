@@ -139,12 +139,6 @@ def plot_experiment_results(results: list, conditions_list: list, step_sizes: li
 
     min_y, min_x = np.unravel_index(np.argmin(results), results.shape)
 
-    print(X.shape)
-    print(Y.shape)
-    print(results.shape)
-    print(conditions_list)
-    print(min_x)
-
     fig = plt.figure(figsize=(10, 5))
     ax = fig.add_subplot(111)
 

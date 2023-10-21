@@ -103,4 +103,6 @@ def experiment_step_sizes(
     plot_experiment_results(min_f_list, condition_name_list, step_sizes)
 
     plot_single_result(best, f, domain, title="Best result")
+    print(best)
     plot_single_result(worst, f, domain, title="Worst result")
+    print(worst)
