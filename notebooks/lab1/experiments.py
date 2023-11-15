@@ -1,8 +1,7 @@
-import time
-from function import Function, Domain
+from imports import Function, Domain, Result, Solver
 from plotting import plot_experiment_results, plot_single_result
-from solver import Solver, Result
 import autograd.numpy as np
+import time
 
 
 def single_experiment(

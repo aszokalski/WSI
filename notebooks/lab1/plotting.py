@@ -1,7 +1,6 @@
-from matplotlib import pyplot as plt
-from function import Function, Domain
+from imports import Function, Domain, Result
 import autograd.numpy as np
-from solver import Result
+import matplotlib.pyplot as plt
 
 DEFAULT_LINSPACE = np.linspace(-5, 5, 20)
 FIG_SIZE = (9, 5)

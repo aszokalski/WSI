@@ -1,94 +1,69 @@
-from dataclasses import dataclass, field
-from collections import namedtuple
-from function import Function, Domain
-import autograd.numpy as np
 import time
+from typing import Callable
+import autograd.numpy as np
+from autograd import elementwise_grad
+from dataclasses import dataclass, field
+from utils.function import Function
+from utils.domain import Domain
+from solver.stop_conditions import StopConditions, Condition
+from solver.iteration import Iteration
+from solver.result import Result
+from solver.solver import Solver
+
+# utils
+
 
 TIME_RUNNING_ACCURACY = 4
 
 
 @dataclass
-class Iteration:
-    """Class representing iteration of solver."""
+class GradientDescentFunction(Function):
+    """Class representing a function with a gradient."""
 
-    n_iter: int = field()
-    time_running: int = field(metadata={"unit": "s"})
-    x: np.ndarray = field()
-    f_value: float = field()
+    gradient: Callable[[np.array], np.array] = field(default=None)
+
+    def __post_init__(self):
+        if self.gradient is None:
+            self.gradient = elementwise_grad(self.f)
+
+
+@dataclass
+class GradientDescentIteration(Iteration):
     gradient_value: np.ndarray = field()
 
 
-Condition = namedtuple("Condition", ["function", "name"])
+@dataclass
+class GradientDescentResult(Result):
+    gradient_value: np.ndarray = field()
 
 
-class StopConditions:
+class GradientDescentStopConditions(StopConditions):
     """Class containing static methods for stop conditions."""
-
-    @staticmethod
-    def max_iterations(max_iter: int):
-        """Stop the experiment after max_iter iterations."""
-
-        def stop_condition(iteration: Iteration):
-            return iteration.n_iter >= max_iter
-
-        return Condition(stop_condition, f"max_iterations({max_iter})")
-
-    @staticmethod
-    def max_time(max_time: int):
-        """Stop the experiment after max_time seconds."""
-
-        def stop_condition(iteration: Iteration):
-            return iteration.time_running >= max_time
-
-        return Condition(stop_condition, f"max_time({max_time})")
 
     @staticmethod
     def min_gradient(min_gradient: float):
         """Stop the experiment when gradient is smaller than min_gradient."""
 
-        def stop_condition(iteration: Iteration):
+        def stop_condition(iteration: GradientDescentIteration):
             return np.linalg.norm(iteration.gradient_value) <= min_gradient
 
         return Condition(stop_condition, f"min_gradient({min_gradient})")
 
-    @staticmethod
-    def once():
-        """Stop the experiment after first iteration."""
 
-        def stop_condition(_):
-            return True
-
-        return Condition(stop_condition, "once()")
+# algorithm
 
 
 @dataclass
-class Result:
-    """Class representing result of solver."""
-
-    n_iter: int = field()
-    time_running: int = field()
-    x: np.ndarray = field()
-    stop_condition: str = field()
-    f_value: float = field()
-    gradient_value: np.ndarray = field()
-
-    x0: np.ndarray = field(repr=False)
-    history: list[Iteration] = field(repr=False)
-
-
-@dataclass
-class Solver:
-    """A solver. It may be initialized with some hyperparameters."""
-
+class GradientDescentSolver(Solver):
     step_size: float = field(default=0.01)
     stop_conditions: list = field(
-        default_factory=lambda: [StopConditions.max_iterations(100)]
+        default_factory=lambda: [GradientDescentStopConditions.max_iterations(100)]
     )
 
     def get_parameters(self):
         """Returns a dictionary of hyperparameters"""
         return {
-            "learning_rate": self.step_size,
+            "step_size": self.step_size,
             "stop_conditions": [con.name for con in self.stop_conditions],
         }
 
@@ -101,12 +76,12 @@ class Solver:
 
     def solve(
         self,
-        problem: Function,
+        problem: GradientDescentFunction,
         x0: np.ndarray,
         domain: Domain,
         log: bool = False,
         log_interval_time: int = 1,
-    ) -> Result:
+    ) -> GradientDescentResult:
         """
         A method that solves the given problem for given initial solution.
         It may accept or require additional parameters.
@@ -120,7 +95,7 @@ class Solver:
         log_counter = 0
 
         while True:
-            iteration = Iteration(
+            iteration = GradientDescentIteration(
                 x=x,
                 f_value=np.linalg.norm(problem.f(x)),
                 gradient_value=problem.gradient(x),
@@ -140,7 +115,7 @@ class Solver:
                 satisfied_condition = "X_OUT_OF_DOMAIN"
 
             if satisfied_condition is not None:
-                return Result(
+                return GradientDescentResult(
                     x0=x0,
                     x=iteration.x,
                     f_value=iteration.f_value,

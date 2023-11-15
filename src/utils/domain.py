@@ -1,21 +1,4 @@
-from dataclasses import dataclass, field
-from typing import Callable
 import autograd.numpy as np
-from autograd import elementwise_grad
-
-
-@dataclass
-class Function:
-    """Class representing function."""
-
-    f: Callable[[np.array], np.array] = field()
-    gradient: Callable[[np.array], np.array] = field(default=None)
-    dim: int = field(kw_only=True)
-    name: str = field(default=None)
-
-    def __post_init__(self):
-        if self.gradient is None:
-            self.gradient = elementwise_grad(self.f)
 
 
 class Domain(np.ndarray):
