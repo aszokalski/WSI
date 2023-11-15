@@ -1,9 +1,15 @@
 from abc import ABC
-from collections import namedtuple
 from solver.iteration import Iteration
+from dataclasses import dataclass
+from typing import Callable
 
 
-Condition = namedtuple("Condition", ["function", "name"])
+@dataclass
+class Condition:
+    """Class representing condition."""
+
+    function: Callable[[Iteration], bool]
+    name: str
 
 
 class StopConditions(ABC):
