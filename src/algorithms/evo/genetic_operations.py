@@ -1,4 +1,4 @@
-from itertools import pairwise
+from itertools import islice
 from algorithms.evo.population import Population
 from algorithms.evo.individual import IndividualType
 from dataclasses import dataclass
@@ -43,7 +43,13 @@ class GeneticOperations:
             """Crossover population."""
             new_population = []
             i = random.randint(0, individualType.n_genes - 1)
-            for individualA, individualB in pairwise(population):
+
+            def batched(iterable, n):
+                it = iter(iterable)
+                while batch := list(islice(it, n)):
+                    yield batch
+
+            for individualA, individualB in batched(population, 2):
                 new_population.append(
                     np.concatenate((individualA[:i], individualB[i:]))
                 )

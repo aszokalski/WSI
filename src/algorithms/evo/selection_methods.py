@@ -17,20 +17,20 @@ class SelectionMethods:
     @staticmethod
     def tournament_selection(k: int):
         def selection_method(
-            population: Population, fitness_function: Function
+            population: Population, cost_function: Function
         ) -> Population:
             """Select k individuals from population using tournament selection."""
 
             return np.array(
                 [
-                    max(
+                    min(
                         [
                             population[i]
                             for i in np.random.choice(
                                 len(population), size=k, replace=False
                             )
                         ],
-                        key=fitness_function.f,
+                        key=cost_function.f,
                     )
                     for _ in range(len(population))
                 ]

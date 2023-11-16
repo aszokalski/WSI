@@ -108,7 +108,6 @@ class EvoSolver(Solver):
                     x=iteration.x,
                     population=population,
                     f_value=iteration.f_value,
-                    gradient_value=iteration.gradient_value,
                     n_iter=iteration.n_iter,
                     time_running=iteration.time_running,
                     stop_condition=satisfied_condition,

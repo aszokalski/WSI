@@ -12,15 +12,15 @@ from imports import (
     StopConditions,
     Function,
 )
-
+import numpy as np
 
 f = Function(
-    lambda x: x[0] ** 2 + x[1] ** 2,
+    lambda x: np.sum(x[:50]),
     dim=2,
 )
 
 solver = EvoSolver(
-    individual_type=UnitRangeIndividualType(10),
+    individual_type=BinaryIndividualType(100),
     population_size=100,
     selection_method=SelectionMethods.tournament_selection(2),
     genetic_operations=[
@@ -29,7 +29,7 @@ solver = EvoSolver(
     ],
     succession_method=SuccessionMethods.generational_succession(),
     stop_conditions=[
-        StopConditions.max_iterations(100),
+        StopConditions.max_iterations(10000),
     ],
 )
 
