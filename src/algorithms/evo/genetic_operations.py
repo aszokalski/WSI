@@ -42,10 +42,14 @@ class GeneticOperations:
         ) -> Population:
             """Crossover population."""
             new_population = []
-            i = random.randint(0, len(individualType.n_genes) - 1)
+            i = random.randint(0, individualType.n_genes - 1)
             for individualA, individualB in pairwise(population):
-                new_population.append(individualA[:i] + individualB[i:])
-                new_population.append(individualB[:i] + individualA[i:])
+                new_population.append(
+                    np.concatenate((individualA[:i], individualB[i:]))
+                )
+                new_population.append(
+                    np.concatenate((individualB[:i], individualA[i:]))
+                )
             return np.array(new_population)
 
         return Operation("single_point_crossover", crossover_method)

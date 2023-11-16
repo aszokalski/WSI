@@ -23,11 +23,6 @@ class IndividualType(ABC):
         """Mutate an individual."""
         pass
 
-    @abstractmethod
-    def crossover(self, individual1, individual2):
-        """Crossover two individuals."""
-        pass
-
 
 class BinaryIndividualType(IndividualType):
     """Class representing binary individual type."""

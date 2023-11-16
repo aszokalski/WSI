@@ -20,11 +20,17 @@ class SelectionMethods:
             population: Population, fitness_function: Function
         ) -> Population:
             """Select k individuals from population using tournament selection."""
+
             return np.array(
                 [
                     max(
-                        np.random.choice(population, size=k, replace=False),
-                        key=fitness_function,
+                        [
+                            population[i]
+                            for i in np.random.choice(
+                                len(population), size=k, replace=False
+                            )
+                        ],
+                        key=fitness_function.f,
                     )
                     for _ in range(len(population))
                 ]

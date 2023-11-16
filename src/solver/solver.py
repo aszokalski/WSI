@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABC
-import autograd.numpy as np
 from utils.function import Function
 from solver.result import Result
+import numpy as np
 
 
 class Solver(ABC):
@@ -13,7 +13,9 @@ class Solver(ABC):
         ...
 
     @abstractmethod
-    def solve(self, problem: Function, x0: np.ndarray, *args, **kwargs) -> Result:
+    def solve(
+        self, problem: Function, x0: np.ndarray = None, *args, **kwargs
+    ) -> Result:
         """
         A method that solves the given problem for given initial solution.
         It may accept or require additional parameters.
