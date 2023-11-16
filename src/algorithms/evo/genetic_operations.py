@@ -23,7 +23,7 @@ class GeneticOperations:
     """Class containing genetic operations."""
 
     @staticmethod
-    def mutation(mutation_param: float):
+    def mutation(mutation_param: float = None):
         """Mutate individuals with probability mutation_param"""
 
         def mutation_method(
@@ -37,7 +37,10 @@ class GeneticOperations:
                 ]
             )
 
-        return Operation(f"mutation({mutation_param})", mutation_method)
+        return Operation(
+            f"mutation({mutation_param})" if mutation_param else "mutation",
+            mutation_method,
+        )
 
     @staticmethod
     def single_point_crossover():
@@ -89,4 +92,4 @@ class GeneticOperations:
                 new_population.append(np.concatenate((tail_B, head_A)))
             return np.array(new_population)
 
-        return Operation("tsp_crossover", crossover_method)
+        return Operation(f"tsp_crossover({alpha})", crossover_method)

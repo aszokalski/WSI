@@ -56,7 +56,10 @@ class UnitRangeIndividualType(IndividualType):
 
     def mutate(self, individual, mutation_param: float = 0.1):
         """Mutate an individual using normal distribution."""
-        return [gene + random.uniform(0, mutation_param) for gene in individual]
+        return [
+            gene + random.uniform(-mutation_param, mutation_param)
+            for gene in individual
+        ]
 
 
 class TSPIndividualType(IndividualType):
@@ -64,7 +67,7 @@ class TSPIndividualType(IndividualType):
 
     def __init__(self, n_genes: int = 10):
         """Initialize TSP individual type."""
-        super().__init__(discrete=True, bounds=(0, 1), n_genes=n_genes)
+        super().__init__(discrete=True, bounds=(0, n_genes), n_genes=n_genes)
 
     def generate_random(self):
         """Generate a random TSP individual."""
@@ -73,3 +76,27 @@ class TSPIndividualType(IndividualType):
     def mutate(self, individual, mutation_param: float = 0.1):
         """Mutate an individual."""
         return np.random.permutation(individual)
+
+
+class DomainIndividualType(IndividualType):
+    """Class representing individual type with genes in given range."""
+
+    def __init__(self, n_genes: int = 10, bounds: Tuple[float, float] = (0, 1)):
+        super().__init__(discrete=False, bounds=bounds, n_genes=n_genes)
+
+    def generate_random(self):
+        """Generate a random individual."""
+        return [random.uniform(*self.bounds) for _ in range(self.n_genes)]
+
+    def mutate(self, individual, mutation_param: float = 0.1):
+        """Mutate an individual."""
+        return [
+            min(
+                max(
+                    gene + random.uniform(-mutation_param, mutation_param),
+                    self.bounds[0],
+                ),
+                self.bounds[1],
+            )
+            for gene in individual
+        ]
