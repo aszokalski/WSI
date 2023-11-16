@@ -1,0 +1,31 @@
+2. Zadanie polega na rozwiazaniu problemu komiwojazera.
+Jako dane wejsciowe przyjmujemy wspolrzedne miast, na przyklad:
+
+cities = [[35, 51],
+                   [113, 213],
+                   [82, 280],
+                   [322, 340],
+                   [256, 352],
+                   [160, 24],
+                   [322, 145],
+                   [12, 349],
+                   [282, 20],
+                   [241, 8],
+                   [398, 153],
+                   [182, 305],
+                   [153, 257],
+                   [275, 190],
+                   [242, 75],
+                   [19, 229],
+                   [303, 352],
+                   [39, 309],
+                   [383, 79],
+                   [226, 343]]
+
+Zadaniem jest znalezienie najkrotszej drogi z uzyciem algorytmu ewolucyjnego. 
+Prosze o przetestowanie na roznych danych wejsciowych. 
+Wykresy, wnioski z badan prosze umiescic w raporcie. Krotka instrukcja w readme.
+
+Podaje rowniez przyklad rozwiazanie. 
+Prosze o implementacje swoich funkcji, jednak warto zobaczyc co zostalo zrobione w przykladzie i przeprowadzic samodzielnie podobne badania. 
+https://towardsdatascience.com/an-extensible-evolutionary-algorithm-example-in-python-7372c56a557b 
