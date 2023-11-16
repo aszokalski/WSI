@@ -127,8 +127,8 @@ class EvoSolver(Solver):
                     mutated_population, self.individual_type
                 )
 
-            population = sorted(population, key=problem.f, reverse=True)
-            mutated_population = sorted(mutated_population, key=problem.f, reverse=True)
+            population = sorted(population, key=problem.f)
+            mutated_population = sorted(mutated_population, key=problem.f)
 
             curr_x = mutated_population[0]
             curr_x_fitness = problem.f(curr_x)
