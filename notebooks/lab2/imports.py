@@ -5,7 +5,11 @@ sys.path.append("src")
 
 # flake8: noqa
 from algorithms.evo.population import Population
-from algorithms.evo.individual import BinaryIndividualType, UnitRangeIndividualType
+from algorithms.evo.individual import (
+    BinaryIndividualType,
+    UnitRangeIndividualType,
+    TSPIndividualType,
+)
 from algorithms.evo.genetic_operations import GeneticOperations
 from algorithms.evo.selection_methods import SelectionMethods
 from algorithms.evo.succession_metods import SuccessionMethods

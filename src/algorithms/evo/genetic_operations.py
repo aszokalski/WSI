@@ -7,6 +7,12 @@ import numpy as np
 import random
 
 
+def batched(iterable, n):
+    it = iter(iterable)
+    while batch := list(islice(it, n)):
+        yield batch
+
+
 @dataclass
 class Operation:
     name: str
@@ -44,11 +50,6 @@ class GeneticOperations:
             new_population = []
             i = random.randint(0, individualType.n_genes - 1)
 
-            def batched(iterable, n):
-                it = iter(iterable)
-                while batch := list(islice(it, n)):
-                    yield batch
-
             for individualA, individualB in batched(population, 2):
                 new_population.append(
                     np.concatenate((individualA[:i], individualB[i:]))
@@ -59,3 +60,33 @@ class GeneticOperations:
             return np.array(new_population)
 
         return Operation("single_point_crossover", crossover_method)
+
+    @staticmethod
+    def tsp_crossover(alpha: float):
+        """Crossover for traveling salesman problem."""
+
+        def crossover_method(
+            population: Population, individualType: IndividualType
+        ) -> Population:
+            """Crossover population."""
+            new_population = []
+            pivot = int(alpha * individualType.n_genes)
+
+            for individualA, individualB in batched(population, 2):
+                (tail_A, head_A) = (individualA[:pivot], individualA[pivot:])
+                (tail_B, head_B) = (individualB[:pivot], individualB[pivot:])
+
+                mapping_A = {tail_B[i]: tail_A[i] for i in range(len(tail_A))}
+                mapping_B = {tail_A[i]: tail_B[i] for i in range(len(tail_A))}
+
+                for i in range(len(head_A)):
+                    while head_A[i] in tail_B:
+                        head_A[i] = mapping_A[head_A[i]]
+                    while head_B[i] in tail_A:
+                        head_B[i] = mapping_B[head_B[i]]
+
+                new_population.append(np.concatenate((tail_A, head_B)))
+                new_population.append(np.concatenate((tail_B, head_A)))
+            return np.array(new_population)
+
+        return Operation("tsp_crossover", crossover_method)

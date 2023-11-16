@@ -57,3 +57,19 @@ class UnitRangeIndividualType(IndividualType):
     def mutate(self, individual, mutation_param: float = 0.1):
         """Mutate an individual using normal distribution."""
         return [gene + random.uniform(0, mutation_param) for gene in individual]
+
+
+class TSPIndividualType(IndividualType):
+    """Class representing individual type for TSP problem."""
+
+    def __init__(self, n_genes: int = 10):
+        """Initialize TSP individual type."""
+        super().__init__(discrete=True, bounds=(0, 1), n_genes=n_genes)
+
+    def generate_random(self):
+        """Generate a random TSP individual."""
+        return np.random.permutation(self.n_genes)
+
+    def mutate(self, individual, mutation_param: float = 0.1):
+        """Mutate an individual."""
+        return np.random.permutation(individual)

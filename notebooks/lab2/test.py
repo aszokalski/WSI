@@ -2,6 +2,7 @@
 from imports import (
     Population,
     BinaryIndividualType,
+    TSPIndividualType,
     UnitRangeIndividualType,
     GeneticOperations,
     SelectionMethods,
@@ -20,12 +21,12 @@ f = Function(
 )
 
 solver = EvoSolver(
-    individual_type=BinaryIndividualType(100),
-    population_size=100,
+    individual_type=TSPIndividualType(4),
+    population_size=10,
     selection_method=SelectionMethods.tournament_selection(2),
     genetic_operations=[
         GeneticOperations.mutation(0.1),
-        GeneticOperations.single_point_crossover(),
+        GeneticOperations.tsp_crossover(0.5),
     ],
     succession_method=SuccessionMethods.generational_succession(),
     stop_conditions=[
@@ -33,4 +34,4 @@ solver = EvoSolver(
     ],
 )
 
-solver.solve(f, log=True)
+solver.solve(f, log=True, log_interval_time=0)

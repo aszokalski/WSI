@@ -96,7 +96,10 @@ class EvoSolver(Solver):
                 ),
             )
 
-            if log and iteration.time_running > log_interval_time * log_counter:
+            if log and (
+                iteration.time_running > log_interval_time * log_counter
+                or log_interval_time == 0
+            ):
                 print(iteration)
                 log_counter += 1
 
