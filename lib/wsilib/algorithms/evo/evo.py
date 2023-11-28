@@ -30,10 +30,12 @@ class EvoResult(Result):
 class EvoSolver(Solver):
     """A solver for evolutionary algorithms."""
 
-    individual_type: IndividualType = field(default_factory=BinaryIndividualType)
+    individual_type: IndividualType = field(
+        default_factory=lambda: BinaryIndividualType()
+    )
     population_size: int = 10
     selection_method: SelectionMethod = field(
-        default=SelectionMethods.tournament_selection(2)
+        default_factory=lambda: SelectionMethods.tournament_selection(2)
     )
     genetic_operations: list[Operation] = field(
         default_factory=lambda: [
@@ -42,7 +44,7 @@ class EvoSolver(Solver):
         ]
     )
     succession_method: SuccessionMethod = field(
-        default=SuccessionMethods.generational_succession()
+        default_factory=lambda: SuccessionMethods.generational_succession()
     )
     stop_conditions: list[Condition] = field(
         default_factory=lambda: [StopConditions.max_iterations(100)]
