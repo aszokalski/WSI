@@ -31,13 +31,13 @@ class TwoPlayerGame(ABC):
 
     @abstractmethod
     @cache
-    def get_moves(self, state: List = None) -> List:
+    def get_moves(self, state: List = None, turn: Literal[0, 1, None] = None) -> List:
         """Returns a list of possible moves from the given state"""
         ...
 
     @abstractmethod
     @cache
-    def is_terminal(self, state: List = None) -> bool:
+    def is_terminal(self, state: List = None, turn: Literal[0, 1, None] = None) -> bool:
         """Returns True if the given state is terminal, False otherwise"""
         ...
 
@@ -49,8 +49,9 @@ class TwoPlayerGame(ABC):
         if next_state not in self.get_moves():
             raise ValueError("Invalid move")
         self.state = next_state
+        result = self.turn if self.is_terminal(self.state) else None
         self.turn = 1 - self.turn
-        return 1 - self.turn if self.is_terminal(self.state) else None
+        return result
 
 
 class TicTacToe(TwoPlayerGame):
@@ -69,32 +70,44 @@ class TicTacToe(TwoPlayerGame):
     def is_valid_state(self, state: List) -> bool:
         return len(state) == self._size**2 and all(v in [None, 0, 1] for v in state)
 
-    def get_moves(self, state: List = None) -> List:
-        if state is None:
+    def get_moves(self, state: List = None, turn: Literal[0, 1, None] = None) -> List:
+        if state is None or turn is None:
             state = self.state
+            turn = self.turn
+
         return [
-            state[:i] + [self.turn] + state[i + 1 :]
+            state[:i] + [turn] + state[i + 1 :]
             for i, v in enumerate(state)
             if v is None
         ]
 
-    def is_terminal(self, state: List = None) -> bool:
-        if state is None:
+    def is_terminal(self, state: List = None, turn: Literal[0, 1, None] = None) -> bool:
+        if state is None or turn is None:
             state = self.state
-        return (
-            any(
-                all(state[i] == state[i + j] for j in [1, 2])
-                for i in [0, 3, 6, 0, 1, 2, 0, 2]
-            )
-            or 0 not in state
+            turn = self.turn
+
+        horizontals = [
+            state[i * self._size : (i + 1) * self._size] for i in range(self._size)
+        ]
+
+        verticals = [state[i :: self._size] for i in range(self._size)]
+
+        diagonals = [
+            state[:: self._size + 1],
+            state[self._size - 1 : self._size**2 - 1 : self._size - 1],
+        ]
+
+        return any(
+            all(v == turn for v in line) for line in horizontals + verticals + diagonals
         )
 
 
-if __name__ == "__main__":
-    game = TicTacToe(size=3)
-    print(game.state)
-    move = game.get_moves()[0]
-    print(move)
-    game.make_move(move)
-    move = game.get_moves()[0]
-    print(move)
+# if __name__ == "__main__":
+#     game = TicTacToe(size=3)
+#     print(game.state)
+#     move = game.get_moves()[0]
+#     print(move)
+#     game.make_move(move)
+#     move = game.get_moves()[0]
+#     game.state = [None, 0, 1, 0, 1, 1, 1, 1, 0]
+#     print(game.is_terminal())
