@@ -8,13 +8,20 @@ Laboratorium posługuje się wspólną boblioteką, w której zaimplementowane s
 
 Jest ona instalowana wraz z innymi zależnościami z pliku `requirements.txt` za pomocą polecenia:
 
-## Setup
+## Wymagania
+
+### Python
 
 ```bash
 pip install -r requirements.txt
 ```
 
 ## Budowanie archiwum alboratorium
+
+### Zależności
+
+* `nbconvert` - `pip install nbconvert`
+* `pandoc` - `sudo apt install pandoc`
 
 Aby zbudować archiwum z kodem źródłowym laboratorium należy wykonać polecenie:
 
@@ -26,3 +33,5 @@ gdzie `<lab_name>` to nazwa katalogu z laboratorium (np. `lab1`).
 
 Powstanie wówczas archiwum `<lab_name>.zip` w katalogu `archives` zawierające kod źródłowy laboratorium.
 (W archiwum znajdą się jedynie pliki dodane do gita).
+
+Automatycznie powstanie pdf z raportu z laboratorium na podstawie pliku `raport.ipynb` w katalogu laboratorium.
