@@ -1,5 +1,10 @@
-from imports import Function, Domain, Result, Solver
-from plotting import plot_experiment_results, plot_single_result
+from wsilib.algorithms.gradient_descent.gradient_descent import (
+    GradientDescentFunction as Function,
+    GradientDescentSolver as Solver,
+    GradientDescentResult as Result,
+)
+from wsilib.utils.domain import Domain
+from src.plotting import plot_experiment_results, plot_single_result
 import autograd.numpy as np
 import time
 

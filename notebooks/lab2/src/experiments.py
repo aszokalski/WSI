@@ -1,6 +1,9 @@
 import itertools
 import math
-from imports import Function, EvoSolver, TSPIndividualType, EvoResult
+from wsilib.utils.function import Function
+from wsilib.algorithms.evo.evo import EvoSolver, EvoResult
+from wsilib.algorithms.evo.individual import TSPIndividualType
+
 import numpy as np
 
 cities = [

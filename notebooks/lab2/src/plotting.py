@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from typing import List
-from imports import EvoResult
+from wsilib.algorithms.evo.evo import EvoResult
 import numpy as np
 
 

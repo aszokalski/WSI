@@ -1,4 +1,8 @@
-from imports import Function, Domain, Result
+from wsilib.algorithms.gradient_descent.gradient_descent import (
+    GradientDescentFunction as Function,
+    GradientDescentResult as Result,
+)
+from wsilib.utils.domain import Domain
 import autograd.numpy as np
 import matplotlib.pyplot as plt
 
