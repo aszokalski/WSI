@@ -1,30 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import List, Literal, Callable
+from typing import List, Literal
 from game import TwoPlayerGame
-from functools import wraps
 import random
-
-
-def raise_(ex):
-    """Raises the given exception"""
-    raise ex
-
-
-def if_(condition: Callable[["Player"], bool], action: Callable):
-    """Decorator that runs the given action if the condition is False."""
-
-    def decorator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            if condition(args[0]):
-                action()
-
-            else:
-                return func(*args, **kwargs)
-
-        return wrapper
-
-    return decorator
 
 
 class Player(ABC):
@@ -34,18 +11,19 @@ class Player(ABC):
         self._game = game
         self._name = name
 
-    @if_(
-        condition=lambda self: self._game.turn != self._name,
-        action=lambda: raise_(ValueError("Not your turn")),
-    )
-    @abstractmethod
     def get_move(self) -> List:
+        """Checks if it's the player's turn and returns the player's move"""
+        if self._game.turn != self._name:
+            raise ValueError("Not your turn")
+        return self._get_move()
+
+    @abstractmethod
+    def _get_move(self) -> List:
         """Returns the player's move"""
 
 
 class RandomPlayer(Player):
     """A player that makes random moves."""
 
-    def get_move(self) -> List:
-        super().get_move()
+    def _get_move(self) -> List:
         return random.choice(self._game.get_moves(self._game.state, self._name))

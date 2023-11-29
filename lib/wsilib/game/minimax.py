@@ -46,12 +46,11 @@ class MiniMaxPlayer(Player):
         """Recursively populates self._reward_table with the reward for each move for each player."""
         state = tuple(state)
         terminal, winner = self._game.is_terminal(state)
+
         if terminal:
             if winner is None:
                 return 0
-
             return np.inf * (1 if (winner == 1) else -1)
-
         elif self._depth and depth == 0:
             return self._heuristic(state, moving)
 
@@ -60,7 +59,8 @@ class MiniMaxPlayer(Player):
             warnings.warn(
                 "Game.is_terminal() missed a terminal state. Given Game class is faulty. Continuing..."
             )
-            return 1 - moving
+            return 0
+
         for move in possible_moves:
             self._reward_table[move] = self._minimax(move, depth - 1, 1 - moving)
 
@@ -68,12 +68,90 @@ class MiniMaxPlayer(Player):
 
         return self._reward_table[best_move]
 
-    def get_move(self) -> List:
+    def _get_move(self) -> List:
         """Uses the minimax algorithm to determine the best move."""
-        super().get_move()
-
         self._reward_table = {}
         self._minimax(self._game.state, self._depth if self._depth else 0, self._name)
+
+        possible_moves = self._game.get_moves(self._game.state, self._name)
+
+        if len(possible_moves) == 0:
+            raise ValueError("No possible moves. Game is lost.")
+        return self._best_move(possible_moves, self._name)
+
+
+class MiniMaxAlphaBetaPlayer(MiniMaxPlayer):
+    """A player that uses the minimax algorithm with alpha-beta pruning to determine its moves."""
+
+    def _best_move(self, possible_moves: List, moving: int) -> Tuple:
+        """Returns the best move from the given list of possible moves.
+        self._reward_table must be populated before calling this method.
+        """
+
+        def move_reward(move: List) -> int:
+            try:
+                return self._reward_table[tuple(move)]
+            except KeyError:
+                return 0  # the move has been pruned
+
+        return tuple(
+            (max if moving == 1 else min)(
+                possible_moves,
+                key=move_reward,
+            )
+        )
+
+    def _minimax(
+        self, state: List | Tuple, depth: int, moving: int, alpha: int, beta: int
+    ) -> int:
+        """Recursively populates self._reward_table with the reward for each move for each player using alpha-beta pruning."""
+        state = tuple(state)
+        terminal, winner = self._game.is_terminal(state)
+
+        if terminal:
+            if winner is None:
+                return 0
+            return np.inf * (1 if (winner == 1) else -1)
+        elif self._depth and depth == 0:
+            return self._heuristic(state, moving)
+
+        possible_moves = self._game.get_moves(state, moving)
+        if len(possible_moves) == 0:
+            warnings.warn(
+                "Game.is_terminal() missed a terminal state. Given Game class is faulty. Continuing..."
+            )
+            return 0
+
+        for move in possible_moves:
+            if moving == 1:
+                # max
+                reward = self._reward_table[move] = self._minimax(
+                    move, depth - 1, 1 - moving, alpha, beta
+                )
+                alpha = max(reward, alpha)
+                if alpha >= beta:
+                    return alpha
+            else:
+                # min
+                reward = self._reward_table[move] = self._minimax(
+                    move, depth - 1, 1 - moving, alpha, beta
+                )
+                beta = min(beta, reward)
+                if alpha >= beta:
+                    return beta
+
+        return alpha if moving == 1 else beta
+
+    def _get_move(self) -> List:
+        """Uses the minimax algorithm to determine the best move."""
+        self._reward_table = {}
+        self._minimax(
+            self._game.state,
+            self._depth if self._depth else 0,
+            self._name,
+            -np.inf,
+            np.inf,
+        )
 
         possible_moves = self._game.get_moves(self._game.state, self._name)
 
@@ -108,7 +186,7 @@ if __name__ == "__main__":
 
     players = [
         RandomPlayer(game, 0),
-        MiniMaxPlayer(game, 1),
+        MiniMaxAlphaBetaPlayer(game, 1),
     ]
 
     p = 0
