@@ -44,7 +44,10 @@ class MiniMaxPlayer(Player):
     def _minimax(self, state: List | Tuple, depth: int, moving: int) -> int:
         """Recursively populates self._reward_table with the reward for each move for each player."""
         state = tuple(state)
-        if self._game.is_terminal(state):
+        terminal, winner = self._game.is_terminal(state)
+        if terminal:
+            if winner is None:
+                return 0.5
             return 1 - moving
         elif self._depth and depth == 0:
             return self._heuristic(state)
@@ -70,6 +73,7 @@ class MiniMaxPlayer(Player):
         self._minimax(self._game.state, self._depth if self._depth else 0, self._name)
 
         possible_moves = self._game.get_moves(self._game.state, self._name)
+
         if len(possible_moves) == 0:
             raise ValueError("No possible moves. Game is lost.")
         return self._best_move(possible_moves, self._name)
@@ -79,13 +83,15 @@ if __name__ == "__main__":
     game = TicTacToe()
     players = [MiniMaxPlayer(game, 0), MiniMaxPlayer(game, 1)]
 
+    print(game.is_terminal((1, 0, 1, 0, 0, 1, 0, 1, 0)))
+
     p = 0
     while True:
         print(game.state, game.turn)
         result = game.make_move(players[p].get_move())
         p = 1 - p
-        if result is not None:
+        if result[0]:
             print(game.state, game.turn)
             break
 
-    print("Game over. Winner:", result)
+    print("Game over. Winner:", result[1])

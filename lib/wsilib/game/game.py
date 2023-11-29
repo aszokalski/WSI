@@ -37,21 +37,22 @@ class TwoPlayerGame(ABC):
 
     @cache
     @abstractmethod
-    def is_terminal(self, state: Tuple) -> bool:
-        """Returns True if the given state is terminal, False otherwise"""
+    def is_terminal(self, state: Tuple) -> Tuple[bool, Literal[1, 0, None]]:
+        """
+        Returns (True, winner) if the given state is terminal (winner = None - draw), (False, None) otherwise.
+        """
         ...
 
-    def make_move(self, next_state: List) -> Literal[1, 0, None]:
+    def make_move(self, next_state: List) -> Tuple[bool, Literal[1, 0, None]]:
         """Makes a move from the current state to the next state.
         If the move is invalid, raises a ValueError.
-        Returns the winner if the game is over, None otherwise.
+        Returns (True, winner) if the game is over (winner = None - draw), (False, None) otherwise.
         """
         if next_state not in self.get_moves(self.state, self.turn):
             raise ValueError("Invalid move")
         self.state = next_state
-        result = self.turn if self.is_terminal(self.state) else None
         self.turn = 1 - self.turn
-        return result
+        return self.is_terminal(self.state)
 
 
 class TicTacToe(TwoPlayerGame):
@@ -77,9 +78,9 @@ class TicTacToe(TwoPlayerGame):
             if v is None
         ]
 
-    def is_terminal(self, state: Tuple) -> bool:
+    def is_terminal(self, state: Tuple) -> Tuple[bool, Literal[1, 0, None]]:
         if None not in state:
-            return True
+            return (True, None)
 
         horizontals = [
             state[i * self._size : (i + 1) * self._size] for i in range(self._size)
@@ -92,10 +93,11 @@ class TicTacToe(TwoPlayerGame):
             state[self._size - 1 : self._size**2 - 1 : self._size - 1],
         ]
 
-        return any(
-            all(v == line[0] and v is not None for v in line)
-            for line in horizontals + verticals + diagonals
-        )
+        for line in horizontals + verticals + diagonals:
+            if all(v == line[0] and v is not None for v in line):
+                return (True, line[0])
+
+        return (False, None)
 
 
 # if __name__ == "__main__":
