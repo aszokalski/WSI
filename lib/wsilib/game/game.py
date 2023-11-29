@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
-from typing import List, Literal
+from typing import List, Literal, Tuple
 from functools import cache
 
 
@@ -29,15 +29,15 @@ class TwoPlayerGame(ABC):
         """Returns True if the given state is valid, False otherwise"""
         ...
 
-    @abstractmethod
     @cache
-    def get_moves(self, state: List = None, turn: Literal[0, 1, None] = None) -> List:
+    @abstractmethod
+    def get_moves(self, state: Tuple, turn: Literal[0, 1]) -> List[Tuple]:
         """Returns a list of possible moves from the given state"""
         ...
 
-    @abstractmethod
     @cache
-    def is_terminal(self, state: List = None, turn: Literal[0, 1, None] = None) -> bool:
+    @abstractmethod
+    def is_terminal(self, state: Tuple) -> bool:
         """Returns True if the given state is terminal, False otherwise"""
         ...
 
@@ -46,7 +46,7 @@ class TwoPlayerGame(ABC):
         If the move is invalid, raises a ValueError.
         Returns the winner if the game is over, None otherwise.
         """
-        if next_state not in self.get_moves():
+        if next_state not in self.get_moves(self.state, self.turn):
             raise ValueError("Invalid move")
         self.state = next_state
         result = self.turn if self.is_terminal(self.state) else None
@@ -70,21 +70,16 @@ class TicTacToe(TwoPlayerGame):
     def is_valid_state(self, state: List) -> bool:
         return len(state) == self._size**2 and all(v in [None, 0, 1] for v in state)
 
-    def get_moves(self, state: List = None, turn: Literal[0, 1, None] = None) -> List:
-        if state is None or turn is None:
-            state = self.state
-            turn = self.turn
-
+    def get_moves(self, state: Tuple, turn: Literal[0, 1]) -> List[Tuple]:
         return [
-            state[:i] + [turn] + state[i + 1 :]
+            tuple(state[:i]) + tuple([turn]) + tuple(state[i + 1 :])
             for i, v in enumerate(state)
             if v is None
         ]
 
-    def is_terminal(self, state: List = None, turn: Literal[0, 1, None] = None) -> bool:
-        if state is None or turn is None:
-            state = self.state
-            turn = self.turn
+    def is_terminal(self, state: Tuple) -> bool:
+        if None not in state:
+            return True
 
         horizontals = [
             state[i * self._size : (i + 1) * self._size] for i in range(self._size)
@@ -98,7 +93,8 @@ class TicTacToe(TwoPlayerGame):
         ]
 
         return any(
-            all(v == turn for v in line) for line in horizontals + verticals + diagonals
+            all(v == line[0] and v is not None for v in line)
+            for line in horizontals + verticals + diagonals
         )
 
 
@@ -108,6 +104,6 @@ class TicTacToe(TwoPlayerGame):
 #     move = game.get_moves()[0]
 #     print(move)
 #     game.make_move(move)
-#     move = game.get_moves()[0]
+#     move = game.get_moves(state=)[0]
 #     game.state = [None, 0, 1, 0, 1, 1, 1, 1, 0]
 #     print(game.is_terminal())

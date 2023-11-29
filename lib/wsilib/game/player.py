@@ -33,10 +33,10 @@ class Player(ABC):
         self._game = game
         self._name = name
 
-    @abstractmethod
     @if_(
-        lambda self: self._game.turn != self._name,
-        lambda: raise_(ValueError("Not your turn")),
+        condition=lambda self: self._game.turn != self._name,
+        action=lambda: raise_(ValueError("Not your turn")),
     )
+    @abstractmethod
     def get_move(self) -> List:
         """Returns the player's move"""
