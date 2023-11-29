@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Literal, Callable
 from game import TwoPlayerGame
 from functools import wraps
+import random
 
 
 def raise_(ex):
@@ -40,3 +41,11 @@ class Player(ABC):
     @abstractmethod
     def get_move(self) -> List:
         """Returns the player's move"""
+
+
+class RandomPlayer(Player):
+    """A player that makes random moves."""
+
+    def get_move(self) -> List:
+        super().get_move()
+        return random.choice(self._game.get_moves(self._game.state, self._name))
