@@ -45,7 +45,7 @@ with tempfile.TemporaryDirectory() as temp_dir:
                             os.makedirs(end_dir)
                         shutil.copy(os.path.join(root, file), end_dir)
         else:
-            if "./" + item in git_files:
+            if "./" + item in git_files or item.endswith(".pdf"):
                 shutil.copy(item, temp_dir)
 
     # Create a zip file of the temporary directory
