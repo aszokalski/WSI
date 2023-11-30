@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Literal
-from game import TwoPlayerGame
+from wsilib.game.game import TwoPlayerGame
 import random
 
 

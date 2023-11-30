@@ -1,5 +1,5 @@
-from player import Player, RandomPlayer
-from game import TwoPlayerGame, TicTacToe
+from wsilib.game.player import Player
+from wsilib.game.game import TwoPlayerGame
 from typing import Literal, Callable, List, Tuple
 import warnings
 import numpy as np
@@ -13,7 +13,7 @@ class MiniMaxPlayer(Player):
         game: TwoPlayerGame,
         name: Literal[1, 0],
         depth: int = None,
-        heuristic: Callable[[Tuple, Literal[1, 0]], int] = None,
+        heuristic: Callable[[Tuple, Literal[1, 0]], float] = None,
     ):
         if (depth is None) ^ (heuristic is None):
             raise ValueError("Must specify both depth and heuristic or neither")
@@ -160,42 +160,42 @@ class MiniMaxAlphaBetaPlayer(MiniMaxPlayer):
         return self._best_move(possible_moves, self._name)
 
 
-if __name__ == "__main__":
-    game = TicTacToe(size=3)
+# if __name__ == "__main__":
+#     game = TicTacToe(size=3)
 
-    def heuristic(state: Tuple, turn: Literal[1, 0]) -> int:
-        state = list(state)
-        """Returns the heuristic value of the given state for the given player."""
-        for i in range(len(state)):
-            if state[i] is None:
-                state[i] = 0
-            elif state[i] == turn:
-                state[i] = 1
-            else:
-                state[i] = -1
-        matrix = np.array(state).reshape((3, 3))
+#     def heuristic(state: Tuple, turn: Literal[1, 0]) -> int:
+#         state = list(state)
+#         """Returns the heuristic value of the given state for the given player."""
+#         for i in range(len(state)):
+#             if state[i] is None:
+#                 state[i] = 0
+#             elif state[i] == turn:
+#                 state[i] = 1
+#             else:
+#                 state[i] = -1
+#         matrix = np.array(state).reshape((3, 3))
 
-        point_matrix = np.array(
-            [
-                [3, 2, 3],
-                [2, 4, 2],
-                [3, 2, 3],
-            ]
-        )
-        return np.sum(point_matrix * matrix)
+#         point_matrix = np.array(
+#             [
+#                 [3, 2, 3],
+#                 [2, 4, 2],
+#                 [3, 2, 3],
+#             ]
+#         )
+#         return np.sum(point_matrix * matrix)
 
-    players = [
-        RandomPlayer(game, 0),
-        MiniMaxAlphaBetaPlayer(game, 1),
-    ]
+#     players = [
+#         RandomPlayer(game, 0),
+#         MiniMaxAlphaBetaPlayer(game, 1),
+#     ]
 
-    p = 0
-    while True:
-        print(game.state, game.turn)
-        result = game.make_move(players[p].get_move())
-        p = 1 - p
-        if result[0]:
-            print(game.state, game.turn)
-            break
+#     p = 0
+#     while True:
+#         print(game.state, game.turn)
+#         result = game.make_move(players[p].get_move())
+#         p = 1 - p
+#         if result[0]:
+#             print(game.state, game.turn)
+#             break
 
-    print("Game over. Winner:", result[1])
+#     print("Game over. Winner:", result[1])

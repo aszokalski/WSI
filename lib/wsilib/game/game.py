@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from typing import List, Literal, Tuple
 from functools import cache
@@ -9,7 +9,7 @@ class TwoPlayerGame(ABC):
     """Abstract class for a two-player game."""
 
     turn: Literal[1, 0] = 0
-    state: List = field(default=None, init=False)
+    state: List = None
 
     def __post_init__(self, start_state: List = None):
         if start_state is not None:
@@ -98,14 +98,3 @@ class TicTacToe(TwoPlayerGame):
                 return (True, line[0])
 
         return (False, None)
-
-
-# if __name__ == "__main__":
-#     game = TicTacToe(size=3)
-#     print(game.state)
-#     move = game.get_moves()[0]
-#     print(move)
-#     game.make_move(move)
-#     move = game.get_moves(state=)[0]
-#     game.state = [None, 0, 1, 0, 1, 1, 1, 1, 0]
-#     print(game.is_terminal())
