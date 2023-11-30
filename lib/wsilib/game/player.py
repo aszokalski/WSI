@@ -7,7 +7,7 @@ import random
 class Player(ABC):
     """Abstract class for a player in a two-player game."""
 
-    def __init__(self, game: TwoPlayerGame, name: Literal[1, 0]):
+    def __init__(self, game: TwoPlayerGame, name: Literal[1, 0], *args):
         self._game = game
         self._name = name
 

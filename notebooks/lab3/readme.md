@@ -51,6 +51,7 @@ Przechowuje:
 Implementuje:
 
 * `make_move(self, next_state: List)` - wykonuje ruch `next_state` i zwraca krotkę `(game_over, winner)`, gdzie `game_over` jest wartością logiczną, która mówi, czy gra się zakończyła, a `winner` jest numerem gracza, który wygrał grę. Jeśli `game_over` jest `False`, to `winner` jest równy `None`.
+* `reset(self)` - resetuje stan gry do stanu początkowego
 
 Metody abstrakcyjne:
 

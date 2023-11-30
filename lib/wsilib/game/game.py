@@ -19,6 +19,11 @@ class TwoPlayerGame(ABC):
         else:
             self.state = self.get_start_state()
 
+    def reset(self) -> None:
+        """Resets the game to the start state"""
+        self.state = self.get_start_state()
+        self.turn = 0
+
     @abstractmethod
     def get_start_state(self) -> List:
         """Returns the start state of the game"""
