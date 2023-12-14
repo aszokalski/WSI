@@ -13,6 +13,7 @@ from wsilib.solver.iteration import Iteration
 import time
 import numpy as np
 
+
 TIME_RUNNING_ACCURACY = 4
 
 
