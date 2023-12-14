@@ -1,0 +1,5 @@
+matplotlib
+numpy
+autograd
+ipykernel
+./lib
