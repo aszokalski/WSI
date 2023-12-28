@@ -1,7 +1,7 @@
 from sklearn.datasets import load_digits
 from sklearn.model_selection import train_test_split
-from wsilib.algorithms.svm.svm import SVC
 from wsilib.classifier.classifiers import OneToRestClassifier
+from wsilib.algorithms.svm.svm import SVC
 
 digits = load_digits()
 X = digits.data

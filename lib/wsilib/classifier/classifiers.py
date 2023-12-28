@@ -49,6 +49,7 @@ class ClassifierLog:
             [epoch.epoch for epoch in self.epochs],
             [epoch.loss for epoch in self.epochs],
         )
+
         plt.xlabel("Epoch")
         plt.ylabel("Loss")
         if title is not None:

@@ -1,3 +1,10 @@
+from sklearn.metrics import (
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score,
+    confusion_matrix,
+)
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
 from typing import Literal
@@ -54,7 +61,7 @@ class SoftMax(ActivationFunction):
         jacobian_matrix = -np.outer(softmax_values, softmax_values)
         np.fill_diagonal(jacobian_matrix, softmax_values * (1 - softmax_values))
 
-        return jacobian_matrix
+        return np.diag(jacobian_matrix)
 
 
 @dataclass
@@ -68,7 +75,7 @@ class Layer:
     _weights: np.ndarray = field(default=None, init=False)
 
     def __post_init__(self):
-        self._value = np.zeros(self.size)
+        self._input = np.zeros(self.size)
 
     def set_learning_rate(self, value):
         self._learning_rate = value
@@ -83,15 +90,17 @@ class Layer:
 
     def __call__(self, x: np.ndarray) -> np.ndarray:
         """Apply the layer to the input."""
-        self._value = self.activation_function(self._weights.T @ x)
-        return self._value
+        self._input = x
+        return self.activation_function(self._weights.T @ x)
 
-    def backpropagate(self, d_next_activation: np.ndarray) -> np.ndarray:
-        d_weights = self._value.T @ d_next_activation
+    def backpropagate(self, d_next_loss: np.ndarray) -> np.ndarray:
+        reuse = np.outer(
+            d_next_loss, self.activation_function.derivative(self._input)
+        ).T
+        d_weights = reuse * self._input[:, np.newaxis]
         self._weights -= d_weights * self._learning_rate
-        return (
-                self._weights @ d_next_activation
-        ) * self.activation_function.derivative(self._value)
+
+        return np.einsum("ij,ij->i", reuse, self._weights)
 
 
 @dataclass
@@ -153,11 +162,16 @@ class NNC(Classifier):
             X: np.array,
             y: np.array,
     ) -> EpochLog:
+        avg_loss = 0
         for x, y in zip(X, y):
             pred = self._nn(x)
+
             loss = (y - pred) ** 2
+            avg_loss += loss
             self._nn.backpropagate(loss)
-        return EpochLog(epoch, loss)
+
+        avg_loss /= len(X)
+        return EpochLog(epoch, avg_loss)
 
     def train(self, X: np.array, y: np.array, epochs: int = 100) -> ClassifierLog:
         logs = []
@@ -165,39 +179,22 @@ class NNC(Classifier):
             log = self._train_epoch(epoch, X, y)
             logs.append(log)
             print(log)
+            if epoch % 10 == 0:
+                ClassifierLog(logs).plot_loss()
         return ClassifierLog(logs)
 
     def score(self, X: np.array, y: np.array) -> TrainingScore:
-        y_pred = self.predict(X).class_name
-        accuracy = np.mean(y_pred == y)
-        tp = np.sum((y_pred == 1) & (y == 1))
-        tn = np.sum((y_pred == -1) & (y == -1))
-        fp = np.sum((y_pred == 1) & (y == -1))
-        fn = np.sum((y_pred == -1) & (y == 1))
+        predictions = np.array([self.predict(x).class_name for x in X])
+        true_labels = np.argmax(y, axis=1)
 
-        precision = tp / (tp + fp)
-        recall = tp / (tp + fn)
-        f1_score = 2 * (precision * recall) / (precision + recall)
-        return TrainingScore(accuracy, precision, recall, f1_score)
+        accuracy = accuracy_score(true_labels, predictions)
+        precision = precision_score(
+            true_labels, predictions, average="weighted", zero_division=0
+        )
+        recall = recall_score(
+            true_labels, predictions, average="weighted", zero_division=0
+        )
+        f1 = f1_score(true_labels, predictions, average="weighted", zero_division=0)
+        conf_matrix = confusion_matrix(true_labels, predictions)
 
-
-if __name__ == "__main__":
-    nn = NeuralNetwork(
-        layers=[
-            Layer(size=5),
-            OutputLayer(size=2),
-        ],
-        learning_rate=5,
-    )
-
-    x = np.array([1, 1, 1, 1, 1])
-    y = np.array([0, 1])
-
-    for _ in range(1):
-        print(nn(x))
-        # r squared
-        loss = (y - nn(x)) ** 2
-        print("Loss: ", loss)
-        nn.backpropagate(loss)
-
-    print(nn(x))
+        return TrainingScore(accuracy, precision, recall, f1, conf_matrix)
