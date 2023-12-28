@@ -11,6 +11,8 @@
 
 ## Setup
 
+`Python 3.10` lub nowszy
+
 `pip install -r requirements.txt`
 
 ## Uruchomienie

@@ -28,7 +28,7 @@ class SVC(BinaryClassifier):
         def f(_, X: np.ndarray, Y: np.ndarray):
             return np.exp(
                 -np.linalg.norm(X[:, None] - Y[None, :], axis=-1) ** 2
-                / (2 * sigma ** 2)
+                / (2 * sigma**2)
             )
 
         return f
@@ -59,7 +59,7 @@ class SVC(BinaryClassifier):
         kernel_X_X = self._cached_kernel(self.C, self._X, self._X)
 
         gradient = (
-                np.ones(self._X.shape[0]) - self._y * kernel_X_X @ self._alphas * self._y
+            np.ones(self._X.shape[0]) - self._y * kernel_X_X @ self._alphas * self._y
         )
 
         self._alphas += gradient * self.learning_rate

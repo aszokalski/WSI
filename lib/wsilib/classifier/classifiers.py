@@ -12,10 +12,10 @@ class TrainingScore:
     """A dataclass that stores training score."""
 
     accuracy: float
-    precision: float | None = None
-    recall: float | None = None
-    f1_score: float | None = None
-    confusion_matrix: np.ndarray | None = field(default=None, repr=False)
+    precision: float = None
+    recall: float = None
+    f1_score: float = None
+    confusion_matrix: np.ndarray = field(default=None, repr=False)
 
     def plot_confusion_matrix(self):
         plt.title("Confusion Matrix")
@@ -60,8 +60,8 @@ class ClassifierLog:
 class Prediction:
     """A dataclass that stores prediction."""
 
-    class_name: int | np.ndarray
-    confidence: float | np.ndarray
+    class_name: np.ndarray
+    confidence: np.ndarray
 
 
 @dataclass

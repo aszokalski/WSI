@@ -2,3 +2,4 @@
 numpy
 autograd
 matplotlib
+scikit-learn
