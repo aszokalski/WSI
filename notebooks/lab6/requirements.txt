@@ -1,0 +1,7 @@
+matplotlib
+numpy
+autograd
+ipykernel
+scikit-learn
+gymnasium
+pygame

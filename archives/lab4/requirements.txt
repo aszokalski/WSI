@@ -1,6 +1,0 @@
-matplotlib
-numpy
-autograd
-ipykernel
-scikit-learn
-./lib
